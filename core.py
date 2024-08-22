@@ -92,7 +92,7 @@ def execute_many_inserts_using_a_list_of_dictionaries():
     The below operation is equivalent to running the given INSERT statement 
     once for each parameter set (each dictionary in `data`), except that the operation will be optimized 
     for better performance across many rows.<br>
-    
+
     A key behavioral difference between “execute” and “executemany” is that 
     the latter doesn’t support returning of result rows (with some exaceptions).
     """
@@ -100,9 +100,6 @@ def execute_many_inserts_using_a_list_of_dictionaries():
     with engine.connect() as conn:
         conn.execute(text("INSERT INTO some_table (x, y) VALUES (:x, :y)"), data)
         conn.commit()
-
-execute_many_inserts_using_a_list_of_dictionaries()
-# print(select_all_from_some_table_where_x_is(10))
 
 
 res = select_all_from_table("some_table")
