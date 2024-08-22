@@ -1,0 +1,27 @@
+services:
+
+  # UNCOMMENT IF YOU WANT TO SPIN UP THE PYTHON APP ALSO
+  # app:
+  #   build: .
+  #   container_name: sqlalchemy-demo-container
+  #   command: python main.py
+  #   env_file:
+  #     - .env
+  #   volumes:
+  #     - .:/app
+
+  # SPINS UP A PERSISTENT MYSQL DATABASE
+  # TO USE WITH THE SQLALCHEMY DEMO APP
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - sqlalchemy-mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: alchemy
+    ports:
+      - "3306:3306"
+
+volumes:
+  sqlalchemy-mysql-data:
