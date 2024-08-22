@@ -8,10 +8,8 @@ docker compose up --build -d
 1) Find the correct Container ID for MySQL: `docker ps` 
 2) `docker exec -it <mysql-container-id> mysql -u root -p`
 * When the password prompt comes up, type in `secret`. 
-* In the MySQL shell, list the databases and verify you see the `alchemy` database.
-<br>
 
-3) List the databases and verify you see the alchemy database:
+3) In the MySQL shell, list the databases and verify you see the alchemy database:
 * mysql> `SHOW DATABASES;`
 * If all is well, exit the MySQL shell by typing: mysql> `exit`
 
