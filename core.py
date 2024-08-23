@@ -51,7 +51,6 @@ def insert_into_some_table_begin_once(x:int, y:int):
             {"x": x, "y": y}
         )
 
-
 def select_all_from_table(table:str) -> list:
     """
     The object returned is called <b>Result</b> and represents an iterable object of result rows.<br>
@@ -101,9 +100,10 @@ def execute_many_inserts_using_a_list_of_dictionaries():
         conn.execute(text("INSERT INTO some_table (x, y) VALUES (:x, :y)"), data)
         conn.commit()
 
+def show_all_tables_in_database(engine=engine):
+    with engine.connect() as conn:
+        # Print all MySQL tables in the database:
+        result = conn.execute(text("SHOW TABLES"))
+        print(result.all())
 
-res = select_all_from_table("some_table")
-for row in res:
-    print(f"x: {row.x}  y: {row.y}")
-
-
+show_all_tables_in_database()
