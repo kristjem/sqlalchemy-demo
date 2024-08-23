@@ -130,4 +130,3 @@ class Address(Base):
 def create_all_tables_in_database(engine):
     Base.metadata.create_all(engine)
 
-create_all_tables_in_database(engine)

@@ -123,5 +123,33 @@ def drop_all_metadata_tables_from_db(engine=engine):
    metadata_obj.drop_all(engine)
 
 
+# Reflecting Database Objects
+"""
+How to generate Table objects automatically from an existing database (called "table reflection" in SQLAlchemy).
+
+* Tip: 
+    There is no requirement that reflection must be used in order to use SQLAlchemy with a pre-existing database. 
+    It is entirely typical that the SQLAlchemy application declares all metadata explicitly in Python, such that 
+    its structure corresponds to that the existing database. The metadata structure also need not include tables, 
+    columns, or other constraints and constructs in the pre-existing database that are not needed for the local 
+    application to function.
+* Read more: https://docs.sqlalchemy.org/en/20/core/reflection.html
+* To do it the ORM way, see https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#orm-declarative-reflected
+"""
+some_table = Table("some_table", metadata_obj, autoload_with=engine)
+
+"""
+The 'some_table' object now contains the information about the Column objects present in the table, 
+and the object is usable in exactly the same way as a Table that we declared explicitly:
+
+>>> some_table
+Table('some_table', MetaData(),
+    Column('x', INTEGER(), table=<some_table>),
+    Column('y', INTEGER(), table=<some_table>),
+    schema=None)
+
+>>> print(some_table.c.keys())
+['x', 'y']
+"""
 
 
