@@ -1,5 +1,7 @@
 from keys import engine
-from sqlalchemy import text
+from orm_metadata import User, Address
+from typing import List, Tuple
+from sqlalchemy import text, select
 from sqlalchemy.orm import Session
 
 # About Session() and ORM vs Connection() and Core:
@@ -37,3 +39,60 @@ def commit_as_you_go_session_example():
         )
         session.commit()
 
+# Using SELECT Statements
+"""
+For both Core and ORM, the select() function generates a Select construct which is used for all SELECT queries. 
+Passed to methods like Connection.execute() in Core and Session.execute() in ORM, a SELECT statement is emitted 
+in the current transaction and the result rows available via the returned Result object.
+
+When using the ORM, particularly with a select() construct that’s composed against ORM entities, we will want to 
+execute it using the Session.execute() method on the Session; using this approach, we continue to get Row objects 
+from the result, however these rows are now capable of including complete entities, such as instances of the '
+User class, as individual elements within each row
+
+Important difference between Core and ORM:
+Row objects have only one element, which contain instances of the User class, as opposed to Core, where the
+Row objects contain the actual data from the database.
+"""
+
+def select_users_from_User_where_name_is(name):
+    # See orm_metadata.py for User class
+    stmt = select(User).where(User.name == name)
+    with Session(engine) as session:
+        for row in session.execute(stmt):
+            # The actual User object sits at row.User
+            user_obj = row.User
+            print(f'user: {user_obj}')
+            print(f'user.fullname: {user_obj.fullname}')
+
+select_users_from_User_where_name_is("spongebob")
+
+def select_all_from_User() -> List[User]:
+    stmt = select(User)
+    with Session(engine) as session:
+        return [row.User for row in session.execute(stmt)]
+
+def example_use_of_select_all_from_User_then_do_something() -> List[User]:
+    """Selects all User objects from the db and returns an altered copy of each User object, as a list."""
+    user_objects = select_all_from_User()
+    altered_users = map(lambda user: User(name=user.name, fullname=user.fullname + " ALTERED"), user_objects)
+    print("Returning altered users:")
+    for user in altered_users:
+        print(f'Changed fullname to "{user.fullname}", for user {user.name}')
+    return altered_users
+
+def select_from_two_tables() -> List[Tuple[str, Address]]:
+    """Returns a list of tuples containing User.name (str) and the corresponding Address object."""
+    stmt = select(User.name, Address).where(User.id == Address.user_id).order_by(Address.id)
+    with Session(engine) as session:
+        return session.execute(stmt).all()  
+        # .all() returns a list of all rows. Without it, we get a Result object.
+        # if we in stead use .first() we get the first row as a Row object.
+
+result_from_two_tables = select_from_two_tables()
+print(f'\n{len(result_from_two_tables)} rows returned:\n')
+for row in result_from_two_tables:
+    print(row)
+
+# TODO: Continue here: Selecting from Labeled SQL Expressions
+# https://docs.sqlalchemy.org/en/20/tutorial/data_select.html
